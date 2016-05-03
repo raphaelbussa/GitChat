@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:errorview="http://schemas.android.com/apk/res-auto"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fitsSystemWindows="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/new_message_box"
+            android:layout_below="@+id/toolbar"
+            android:background="@color/background" />
+
+        <View
+            android:id="@+id/toolbar_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_below="@+id/toolbar"
+            android:background="@drawable/toolbar_shadow" />
+
+        <View
+            android:id="@+id/message_box_shadow"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_above="@+id/new_message_box"
+            android:background="@drawable/message_shadow" />
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/new_message_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:padding="2dp">
+
+            <MultiAutoCompleteTextView
+                android:id="@+id/message"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="text|textAutoComplete|textMultiLine"
+                android:maxLines="4" />
+
+            <Button
+                android:id="@+id/send"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/send" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/new_message_box"
+            android:layout_below="@+id/toolbar">
+
+
+            <com.pnikosis.materialishprogress.ProgressWheel
+                android:id="@+id/progress"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                wheel:matProg_barColor="@color/accent"
+                wheel:matProg_progressIndeterminate="true" />
+
+            <tr.xip.errorview.ErrorView
+                android:id="@+id/error"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                errorview:ev_showRetryButton="false"
+                errorview:ev_subtitle="@string/no_message" />
+
+        </RelativeLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/join_room"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_fab_message"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/dimen_16_dp" />
+
+    </RelativeLayout>
+
+    <android.support.design.widget.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end">
+
+        <RelativeLayout
+            android:id="@+id/mention_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background">
+
+            <com.pnikosis.materialishprogress.ProgressWheel
+                android:id="@+id/progress_mention"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                wheel:matProg_barColor="@color/accent"
+                wheel:matProg_progressIndeterminate="true" />
+
+            <tr.xip.errorview.ErrorView
+                android:id="@+id/error_mention"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                errorview:ev_showRetryButton="false"
+                errorview:ev_subtitle="@string/no_mention" />
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/mentions_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+    </android.support.design.widget.NavigationView>
+
+</android.support.v4.widget.DrawerLayout>

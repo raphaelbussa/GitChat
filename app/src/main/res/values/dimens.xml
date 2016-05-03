@@ -1,0 +1,6 @@
+<resources>
+    <dimen name="row_space">2dp</dimen>
+    <dimen name="header_height">200dp</dimen>
+
+    <dimen name="dimen_16_dp">16dp</dimen>
+</resources>
