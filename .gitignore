@@ -1,8 +1,10 @@
 *.DS_Store
 *.iml
-.gradle
+/.gradle
+/.idea
 /local.properties
-.idea
-gradle
+/gradle
 /build
-app/build
+/gradlew
+/gradlew.bat
+/app/build
