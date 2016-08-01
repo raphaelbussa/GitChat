@@ -25,9 +25,6 @@
             android:name=".ui.LoginGitterActivity" />
         <activity
             android:screenOrientation="portrait"
-            android:name=".ui.LoginGithubActivity" />
-        <activity
-            android:screenOrientation="portrait"
             android:name=".ui.MainActivity" />
         <activity
             android:screenOrientation="portrait"

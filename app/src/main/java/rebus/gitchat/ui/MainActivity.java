@@ -68,7 +68,7 @@ public class MainActivity extends BaseActivity implements FragmentManager.OnBack
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
 

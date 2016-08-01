@@ -22,9 +22,12 @@
   ~ SOFTWARE.
   -->
 
-<resources>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item type="id" name="USER_NAME" />
-    <item type="id" name="user_mentions" />
+    <item
+        android:id="@+id/leave_room"
+        app:showAsAction="never"
+        android:title="@string/leave_room" />
 
-</resources>
+</menu>

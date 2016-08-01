@@ -84,6 +84,7 @@ public class RoomsFragment extends BaseFragment implements FutureCallback<List<R
         Navigator.with(getActivity())
                 .build()
                 .goTo(DetailRoomActivity.class, bundle)
+                .animation()
                 .commit();
     }
 

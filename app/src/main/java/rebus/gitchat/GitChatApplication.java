@@ -24,7 +24,7 @@ public class GitChatApplication extends Application {
         RealmConfiguration config = new RealmConfiguration.Builder(getApplicationContext())
                 .name(getResources().getString(R.string.database_conf_name))
                 .schemaVersion(getResources().getInteger(R.integer.database_conf_version))
-                .setModules(new DbModule())
+                .modules(new DbModule())
                 .deleteRealmIfMigrationNeeded()
                 .migration(new RealmMigration() {
                     @Override

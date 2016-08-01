@@ -6,14 +6,7 @@ import android.content.Context;
 import android.os.Build;
 import android.view.inputmethod.InputMethodManager;
 
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.Hours;
-import org.joda.time.Minutes;
-import org.joda.time.Months;
-import org.joda.time.Seconds;
-import org.joda.time.Weeks;
-import org.joda.time.Years;
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -27,6 +20,14 @@ import rebus.gitchat.R;
  * Created by Raphael on 13/12/2015.
  */
 public class Utils {
+
+    public static MaterialDialog loadingDialog(Context context) {
+        return  new MaterialDialog.Builder(context)
+                .content(R.string.loading)
+                .progress(true, 0)
+                .cancelable(false)
+                .show();
+    }
 
     public static String getAvatarUrl(String name, boolean isUrl) {
         if (name == null) return "";
@@ -69,78 +70,6 @@ public class Utils {
             e.printStackTrace();
             return "";
         }
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    public static String dateRelative(Context context, String pubDate) {
-        try {
-            TimeZone timeZone = TimeZone.getTimeZone("UTC");
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            dateFormat.setTimeZone(timeZone);
-            Date date = dateFormat.parse(pubDate);
-            DateTime start = new DateTime(date);
-            DateTime end = new DateTime(System.currentTimeMillis());
-            int seconds = Seconds.secondsBetween(start, end).getSeconds();
-            int minutes = Minutes.minutesBetween(start, end).getMinutes();
-            int hours = Hours.hoursBetween(start, end).getHours();
-            int days = Days.daysBetween(start, end).getDays();
-            int weeks = Weeks.weeksBetween(start, end).getWeeks();
-            int months = Months.monthsBetween(start, end).getMonths();
-            int years = Years.yearsBetween(start, end).getYears();
-            if (years > 0) {
-                if (years == 1) {
-                    return context.getString(R.string.year, years);
-                } else {
-                    return context.getString(R.string.years, years);
-                }
-            }
-            if (months > 0) {
-                if (months == 1) {
-                    return context.getString(R.string.month, months);
-                } else {
-                    return context.getString(R.string.months, months);
-                }
-            }
-            if (weeks > 0) {
-                if (weeks == 1) {
-                    return context.getString(R.string.week, weeks);
-                } else {
-                    return context.getString(R.string.weeks, weeks);
-                }
-            }
-            if (days > 0) {
-                if (days == 1) {
-                    return context.getString(R.string.day, days);
-                } else {
-                    return context.getString(R.string.days, days);
-                }
-            }
-            if (hours > 0) {
-                if (hours == 1) {
-                    return context.getString(R.string.hour, hours);
-                } else {
-                    return context.getString(R.string.hours, hours);
-                }
-            }
-            if (minutes > 0) {
-                if (minutes == 1) {
-                    return context.getString(R.string.minute, minutes);
-                } else {
-                    return context.getString(R.string.minutes, minutes);
-                }
-            }
-            if (seconds > 0) {
-                if (seconds == 1) {
-                    return context.getString(R.string.second, seconds);
-                } else {
-                    return context.getString(R.string.seconds, seconds);
-                }
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return context.getString(R.string.just_now);
-        }
-        return context.getString(R.string.just_now);
     }
 
     public static void hideKeyboard(Activity activity) {

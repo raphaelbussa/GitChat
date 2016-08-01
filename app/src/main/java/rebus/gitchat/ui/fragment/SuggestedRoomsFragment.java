@@ -83,6 +83,7 @@ public class SuggestedRoomsFragment extends BaseFragment implements FutureCallba
         Navigator.with(getActivity())
                 .build()
                 .goTo(DetailRoomActivity.class, bundle)
+                .animation()
                 .commit();
     }
 

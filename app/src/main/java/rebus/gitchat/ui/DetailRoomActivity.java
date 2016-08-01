@@ -2,6 +2,7 @@ package rebus.gitchat.ui;
 
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -10,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,15 +19,16 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Ion;
 import com.mikepenz.actionitembadge.library.ActionItemBadge;
 import com.mikepenz.actionitembadge.library.ActionItemBadgeAdder;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
+import org.fingerlinks.mobile.android.navigator.Navigator;
+
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -47,6 +48,7 @@ import rebus.gitchat.http.response.gitter.room.Room;
 import rebus.gitchat.http.response.gitter.user.User;
 import rebus.gitchat.model.MessageModel;
 import rebus.gitchat.model.UserModel;
+import rebus.gitchat.ui.adapter.MentionMessagesAdapter;
 import rebus.gitchat.ui.adapter.MessagesAdapter;
 import rebus.utils.Utils;
 import rebus.utils.activity.BaseActivity;
@@ -58,11 +60,10 @@ import tr.xip.errorview.ErrorView;
  */
 public class DetailRoomActivity extends BaseActivity {
 
-    private static final String TAG = DetailRoomActivity.class.getName();
     int numMentions = 0;
     private String id;
     private MessagesAdapter adapter;
-    private MessagesAdapter mentionsAdapter;
+    private MentionMessagesAdapter mentionsAdapter;
     private RecyclerView list;
     private RecyclerView mentionList;
     private MultiAutoCompleteTextView message;
@@ -77,16 +78,19 @@ public class DetailRoomActivity extends BaseActivity {
     private ProgressWheel progressWheelMention;
     private ErrorView errorViewMention;
     private FloatingActionButton joinRoom;
+    private MaterialDialog progress;
+
+    private boolean isMember = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        id = getIntent().getBundleExtra(Constants.BUNDLE()).getString("ID");
+        id = getIntent().getExtras().getString("ID");
         setNavigationIcon(R.drawable.ic_back);
         setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                Navigator.with(DetailRoomActivity.this).utils().finishWithAnimation();
             }
         });
         send = (Button) findViewById(R.id.send);
@@ -124,7 +128,7 @@ public class DetailRoomActivity extends BaseActivity {
 
             }
         });
-        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
 
@@ -205,10 +209,8 @@ public class DetailRoomActivity extends BaseActivity {
                     if (e != null) {
                         return;
                     }
-                    Log.d(TAG, "user loaded " + result.size());
                     for (User user : result) {
                         userMentions.add(user.getUsername());
-                        Log.d(TAG, user.getUsername());
                     }
                     String[] users = new String[userMentions.size()];
                     users = userMentions.toArray(users);
@@ -220,7 +222,7 @@ public class DetailRoomActivity extends BaseActivity {
     }
 
     private void initNotification() {
-        mentionsAdapter = new MessagesAdapter(DetailRoomActivity.this);
+        mentionsAdapter = new MentionMessagesAdapter(DetailRoomActivity.this);
         GridLayoutManager manager = new GridLayoutManager(DetailRoomActivity.this, 1, LinearLayoutManager.VERTICAL, false);
         mentionList.addItemDecoration(new SpacesItemDecoration());
         mentionList.setLayoutManager(manager);
@@ -258,10 +260,8 @@ public class DetailRoomActivity extends BaseActivity {
             @Override
             public void onCompleted(Exception e, SampleResponse result) {
                 if (e != null) {
-                    Log.d(TAG, "onCompleted " + result.getError());
                     return;
                 }
-                Log.d(TAG, "onCompleted " + result.isSuccess());
             }
         });
     }
@@ -281,7 +281,6 @@ public class DetailRoomActivity extends BaseActivity {
     private boolean loading = false;
 
     private void loadMessages(String beforeId, String afterId) {
-        Log.d(TAG, "loading [" + loading + "]");
         if (loading) return;
         loading = true;
         HttpRequestClient.with(DetailRoomActivity.this).getGitterRoomMessages(id, beforeId, afterId, new FutureCallback<List<Message>>() {
@@ -352,16 +351,56 @@ public class DetailRoomActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        new ActionItemBadgeAdder().act(this).menu(menu).title(R.string.notification).itemDetails(0, 100, 1).showAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS).add(ActionItemBadge.BadgeStyles.RED_LARGE, numMentions);
+        getMenuInflater().inflate(R.menu.activity_detail_room, menu);
+        new ActionItemBadgeAdder().act(this).menu(menu).title(R.string.notification).itemDetails(0, R.id.user_mentions, 1).showAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS).add(ActionItemBadge.BadgeStyles.RED_LARGE, numMentions);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        if (isMember) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        } else {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+
+        menu.findItem(R.id.leave_room).setVisible(isMember);
+        menu.findItem(R.id.user_mentions).setVisible(isMember);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == 100) {
-            if (drawerLayout != null && !drawerLayout.isDrawerOpen(GravityCompat.END)) {
-                drawerLayout.openDrawer(GravityCompat.END);
-            }
+        switch (item.getItemId()) {
+            case R.id.user_mentions:
+                if (drawerLayout != null && !drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                    drawerLayout.openDrawer(GravityCompat.END);
+                }
+                break;
+            case R.id.leave_room:
+                new MaterialDialog.Builder(DetailRoomActivity.this)
+                        .title(R.string.leave_room)
+                        .content(R.string.leave_room_msg)
+                        .positiveText(R.string.ok)
+                        .negativeText(R.string.cancel)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                progress = Utils.loadingDialog(DetailRoomActivity.this);
+                                HttpRequestClient.with(DetailRoomActivity.this).deleteGitterUserFromRoom(id, new FutureCallback<SampleResponse>() {
+                                    @Override
+                                    public void onCompleted(Exception e, SampleResponse result) {
+                                        progress.dismiss();
+                                        if (e == null && result != null && result.isSuccess()) {
+                                            Navigator.with(DetailRoomActivity.this).utils().finishWithAnimation();
+                                        }
+                                    }
+                                });
+                            }
+                        })
+                        .show();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -379,7 +418,7 @@ public class DetailRoomActivity extends BaseActivity {
                     @Override
                     public void onFinish(boolean success, List<Message> messageList) {
                         if (success) {
-                            popolateRealm(messageList);
+                            mentionsAdapter.update(messageList);
                             if (messageList.size() != 0) {
                                 mentionList.setVisibility(View.VISIBLE);
                                 errorViewMention.setVisibility(View.GONE);
@@ -391,6 +430,8 @@ public class DetailRoomActivity extends BaseActivity {
     }
 
     private void setUpRoom(Room room) {
+        isMember = room.isRoomMember();
+        invalidateOptionsMenu();
         if (room.isRoomMember()) {
             messageBoxShadow.setVisibility(View.VISIBLE);
             messageBox.setVisibility(View.VISIBLE);
@@ -463,7 +504,7 @@ public class DetailRoomActivity extends BaseActivity {
             drawerLayout.closeDrawer(GravityCompat.END);
             return;
         }
-        super.onBackPressed();
+        Navigator.with(DetailRoomActivity.this).utils().finishWithAnimation();
     }
 
     @Override

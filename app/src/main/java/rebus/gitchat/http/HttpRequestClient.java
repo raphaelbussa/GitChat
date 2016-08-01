@@ -1,6 +1,7 @@
 package rebus.gitchat.http;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -171,7 +172,7 @@ public class HttpRequestClient {
                             futureCallback.onCompleted(e, null);
                             return;
                         }
-                        futureCallback.onCompleted(e, result.get(0));
+                        futureCallback.onCompleted(null, result.get(0));
                     }
                 });
     }
@@ -197,6 +198,22 @@ public class HttpRequestClient {
                 .setHeader("Accept", "application/json")
                 .as(UnreadMessage.class)
                 .setCallback(futureCallback);
+    }
+
+    public void deleteGitterUserFromRoom(String roomId, String userId, FutureCallback<SampleResponse> futureCallback) {
+        String url = Constants.API_GITTER_BASE_URL + "/rooms/" + roomId + "/users/" + userId;
+        Ion.with(context)
+                .load("DELETE", url)
+                .setHeader("Authorization", UserAdapter.with(context, UserFactory.TYPE.GITTER).getUserToken())
+                .setHeader("Content-Type", "application/json")
+                .setHeader("Accept", "application/json")
+                .as(SampleResponse.class)
+                .setCallback(futureCallback);
+    }
+
+    public void deleteGitterUserFromRoom(String roomId, FutureCallback<SampleResponse> futureCallback) {
+        String userId = UserFactory.with(context, UserFactory.TYPE.GITTER).getUser().getId();
+        deleteGitterUserFromRoom(roomId, userId, futureCallback);
     }
 
     public void setGitterUnreadItems(UnreadMessage unreadItems, String roomId, FutureCallback<SampleResponse> futureCallback) {
@@ -234,18 +251,6 @@ public class HttpRequestClient {
                 .setBodyParameter("client_id", Constants.API_GITTER_CLIENT_ID)
                 .setBodyParameter("client_secret", Constants.API_GITTER_CLIENT_SECRET)
                 .setBodyParameter("redirect_uri", Constants.API_GITTER_REDIRECT_URI)
-                .setBodyParameter("grant_type", "authorization_code")
-                .as(TokenResponse.class)
-                .setCallback(futureCallback);
-    }
-
-    public void getGitHubToken(String code, FutureCallback<TokenResponse> futureCallback) {
-        Ion.with(context)
-                .load("POST", Constants.API_GITHUB_OAUTH_TOKEN)
-                .setBodyParameter("code", code)
-                .setBodyParameter("client_id", Constants.API_GITHUB_CLIENT_ID)
-                .setBodyParameter("client_secret", Constants.API_GITHUB_CLIENT_SECRET)
-                .setBodyParameter("redirect_uri", Constants.API_GITHUB_REDIRECT_URI)
                 .setBodyParameter("grant_type", "authorization_code")
                 .as(TokenResponse.class)
                 .setCallback(futureCallback);
