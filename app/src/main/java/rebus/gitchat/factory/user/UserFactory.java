@@ -96,6 +96,10 @@ public class UserFactory {
         }
     }
 
+    public enum TYPE {
+        GITTER, GITHUB
+    }
+
     public interface UserCallBack {
         void onError();
 
@@ -104,10 +108,6 @@ public class UserFactory {
 
     public interface LogOutCallBack {
         void onSuccess();
-    }
-
-    public enum TYPE {
-        GITTER, GITHUB
     }
 
 }

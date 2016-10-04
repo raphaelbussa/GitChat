@@ -36,9 +36,9 @@
             android:id="@+id/view_search_tint"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
             android:background="#88000000"
-            android:clickable="true" />
+            android:clickable="true"
+            android:visibility="gone" />
 
         <org.cryse.widget.persistentsearch.PersistentSearchView
             android:id="@+id/search_view"
@@ -46,19 +46,19 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:visibility="gone"
-            app:persistentSV_searchTextColor="?android:textColorPrimary"
-            app:persistentSV_editTextColor="?android:textColorPrimary"
+            app:persistentSV_displayMode="menuItem"
             app:persistentSV_editHintText="@string/search"
             app:persistentSV_editHintTextColor="?android:textColorHint"
-            app:persistentSV_displayMode="menuItem"
-            app:persistentSV_searchCardElevation="2dp" />
+            app:persistentSV_editTextColor="?android:textColorPrimary"
+            app:persistentSV_searchCardElevation="2dp"
+            app:persistentSV_searchTextColor="?android:textColorPrimary" />
 
     </RelativeLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
-        android:layout_height="match_parent"
         android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="start"
         app:menu="@menu/drawer_main" />
 

@@ -3,8 +3,8 @@ package rebus.gitchat.ui.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +15,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltextview.HtmlTextView;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -22,10 +25,8 @@ import java.util.regex.Pattern;
 
 import rebus.gitchat.R;
 import rebus.gitchat.factory.user.UserFactory;
-import rebus.gitchat.http.response.gitter.message.Message;
 import rebus.gitchat.model.MessageModel;
 import rebus.header.view.BezelImageView;
-import rebus.utils.ImageGetter;
 import rebus.utils.Utils;
 
 /**
@@ -100,7 +101,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MainVi
         }
         holder.username.setText(message.getFromUser().getUsername());
         holder.date.setText(Utils.dateConverted(message.getSent()));
-        holder.message.setText(Html.fromHtml(message.getHtml(), new ImageGetter(context), null));
+        holder.message.setHtml(message.getHtml(), new HtmlHttpImageGetter(holder.message, "", true));
         Pattern mentionPattern = Pattern.compile("@([A-Za-z0-9_-]+)");
         Pattern hashtagPattern = Pattern.compile("#([A-Za-z0-9_-]+)");
         Pattern linkPattern = Pattern.compile("((http|https):/{2})+(.+)");
@@ -124,7 +125,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MainVi
         Linkify.addLinks(holder.message, linkPattern, "", null, linkFilter);
         Linkify.addLinks(holder.message, mentionPattern, mentionScheme, null, mentionFilter);
         Linkify.addLinks(holder.message, hashtagPattern, hashtagScheme, null, hashtagFilter);
-        holder.message.setLinkTextColor(context.getResources().getColor(R.color.primary));
+        holder.message.setLinkTextColor(ContextCompat.getColor(context, R.color.primary));
     }
 
     @Override
@@ -143,7 +144,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MainVi
         private BezelImageView avatar;
         private TextView username;
         private TextView date;
-        private TextView message;
+        private HtmlTextView message;
         private LinearLayout bg;
 
         public MainViewHolder(View itemView) {
@@ -151,7 +152,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MainVi
             avatar = (BezelImageView) itemView.findViewById(R.id.avatar);
             username = (TextView) itemView.findViewById(R.id.username);
             date = (TextView) itemView.findViewById(R.id.date);
-            message = (TextView) itemView.findViewById(R.id.message);
+            message = (HtmlTextView) itemView.findViewById(R.id.message);
             bg = (LinearLayout) itemView.findViewById(R.id.bg);
         }
     }

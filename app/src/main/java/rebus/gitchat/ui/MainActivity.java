@@ -17,11 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.reflect.TypeToken;
-import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Ion;
-import com.mikepenz.aboutlibraries.LibsBuilder;
-import com.mikepenz.aboutlibraries.ui.LibsSupportFragment;
 
 import org.cryse.widget.persistentsearch.DefaultVoiceRecognizerDelegate;
 import org.cryse.widget.persistentsearch.PersistentSearchView;
@@ -29,15 +24,12 @@ import org.cryse.widget.persistentsearch.VoiceRecognitionDelegate;
 import org.fingerlinks.mobile.android.navigator.Navigator;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import rebus.gitchat.Constants;
 import rebus.gitchat.R;
 import rebus.gitchat.factory.search.SearchFactory;
-import rebus.gitchat.factory.user.UserAdapter;
 import rebus.gitchat.factory.user.UserBean;
 import rebus.gitchat.factory.user.UserFactory;
-import rebus.gitchat.http.response.gitter.message.Message;
 import rebus.gitchat.ui.fragment.RoomsFragment;
 import rebus.gitchat.ui.fragment.SuggestedRoomsFragment;
 import rebus.header.view.HeaderInterface;
@@ -283,18 +275,13 @@ public class MainActivity extends BaseActivity implements FragmentManager.OnBack
                         .commit();
                 break;
             case R.id.profile:
-                /*LibsSupportFragment fragment = new LibsBuilder()
-                        .withLicenseDialog(true)
-                        .withLicenseShown(true)
-                        .supportFragment();
+                String username = UserFactory.with(MainActivity.this, UserFactory.TYPE.GITTER).getUser().getName();
+                Bundle bundle = new Bundle();
+                bundle.putString("USERNAME", username);
                 Navigator.with(MainActivity.this)
                         .build()
-                        .goTo(fragment, R.id.container)
-                        .tag(Constants.TAG_PROFILE)
-                        .addToBackStack()
-                        .animation()
-                        .replace()
-                        .commit();*/
+                        .goTo(ProfileActivity.class, bundle)
+                        .commit();
                 break;
         }
         return false;

@@ -62,6 +62,38 @@ public class LoginGitterActivity extends BaseActivity {
         }
     }
 
+    private void showError() {
+        new MaterialDialog.Builder(LoginGitterActivity.this)
+                .title(R.string.login_error_t)
+                .content(R.string.login_error_c)
+                .cancelable(false)
+                .positiveText(R.string.authorize)
+                .onAny(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if (which == DialogAction.POSITIVE) {
+                            webView.loadUrl(Constants.getApiGitterOauthCode());
+                        }
+                    }
+                })
+                .show();
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.activity_login;
+    }
+
+    @Override
+    protected int getToolbarId() {
+        return R.id.toolbar;
+    }
+
+    @Override
+    protected int getToolbarShadowId() {
+        return R.id.toolbar_shadow;
+    }
+
     private class OAuthViewClient extends WebViewClient {
 
         @Override
@@ -75,9 +107,9 @@ public class LoginGitterActivity extends BaseActivity {
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            webView.setVisibility(View.GONE);
+            progress.setVisibility(View.VISIBLE);
             if (url.startsWith(Constants.API_GITTER_REDIRECT_URI)) {
-                webView.setVisibility(View.GONE);
-                progress.setVisibility(View.VISIBLE);
                 HttpRequestClient.with(LoginGitterActivity.this).getCode(url, new FutureCallback<CodeResponse>() {
                     @Override
                     public void onCompleted(Exception e, CodeResponse result) {
@@ -121,37 +153,5 @@ public class LoginGitterActivity extends BaseActivity {
             super.onPageStarted(view, url, favicon);
         }
 
-    }
-
-    private void showError() {
-        new MaterialDialog.Builder(LoginGitterActivity.this)
-                .title(R.string.login_error_t)
-                .content(R.string.login_error_c)
-                .cancelable(false)
-                .positiveText(R.string.authorize)
-                .onAny(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        if (which == DialogAction.POSITIVE) {
-                            webView.loadUrl(Constants.getApiGitterOauthCode());
-                        }
-                    }
-                })
-                .show();
-    }
-
-    @Override
-    protected int getLayoutResource() {
-        return R.layout.activity_login;
-    }
-
-    @Override
-    protected int getToolbarId() {
-        return R.id.toolbar;
-    }
-
-    @Override
-    protected int getToolbarShadowId() {
-        return R.id.toolbar_shadow;
     }
 }

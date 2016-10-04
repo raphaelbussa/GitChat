@@ -25,6 +25,8 @@ public class SuggestedRoomsAdapter extends RecyclerView.Adapter<SuggestedRoomsAd
 
     private Context context;
     private List<SuggestedRoom> roomList;
+    private View.OnClickListener onClickListener;
+    private View.OnLongClickListener onLongClickListener;
 
     public SuggestedRoomsAdapter(Context context) {
         this.context = context;
@@ -62,6 +64,14 @@ public class SuggestedRoomsAdapter extends RecyclerView.Adapter<SuggestedRoomsAd
         return roomList.size();
     }
 
+    public void setOnClickListener(View.OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+
+    public void setOnLongClickListener(View.OnLongClickListener onLongClickListener) {
+        this.onLongClickListener = onLongClickListener;
+    }
+
     public class MainViewHolder extends RecyclerView.ViewHolder {
 
         private CardView item;
@@ -76,17 +86,6 @@ public class SuggestedRoomsAdapter extends RecyclerView.Adapter<SuggestedRoomsAd
             name = (TextView) itemView.findViewById(R.id.name);
             topic = (TextView) itemView.findViewById(R.id.topic);
         }
-    }
-
-    private View.OnClickListener onClickListener;
-    private View.OnLongClickListener onLongClickListener;
-
-    public void setOnClickListener(View.OnClickListener onClickListener) {
-        this.onClickListener = onClickListener;
-    }
-
-    public void setOnLongClickListener(View.OnLongClickListener onLongClickListener) {
-        this.onLongClickListener = onLongClickListener;
     }
 
 }

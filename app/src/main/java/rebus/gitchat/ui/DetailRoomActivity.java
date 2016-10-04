@@ -1,5 +1,6 @@
 package rebus.gitchat.ui;
 
+import android.annotation.SuppressLint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -37,7 +39,6 @@ import java.util.regex.Pattern;
 
 import io.realm.Realm;
 import io.realm.Sort;
-import rebus.gitchat.Constants;
 import rebus.gitchat.R;
 import rebus.gitchat.factory.UnReadMessageFactory;
 import rebus.gitchat.http.HttpRequestClient;
@@ -60,15 +61,15 @@ import tr.xip.errorview.ErrorView;
  */
 public class DetailRoomActivity extends BaseActivity {
 
-    int numMentions = 0;
+    private int numMentions = 0;
     private String id;
     private MessagesAdapter adapter;
     private MentionMessagesAdapter mentionsAdapter;
+    private RelativeLayout progressContainer;
     private RecyclerView list;
     private RecyclerView mentionList;
     private MultiAutoCompleteTextView message;
     private Button send;
-    private ProgressWheel progressWheel;
     private ErrorView errorView;
     private Button loadMore;
     private LinearLayout messageBox;
@@ -79,9 +80,12 @@ public class DetailRoomActivity extends BaseActivity {
     private ErrorView errorViewMention;
     private FloatingActionButton joinRoom;
     private MaterialDialog progress;
+    private HeaderViewRecyclerAdapter headerViewRecyclerAdapter;
 
     private boolean isMember = false;
+    private boolean loading = false;
 
+    @SuppressLint("InflateParams")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +97,7 @@ public class DetailRoomActivity extends BaseActivity {
                 Navigator.with(DetailRoomActivity.this).utils().finishWithAnimation();
             }
         });
+        progressContainer = (RelativeLayout) findViewById(R.id.progress_container);
         send = (Button) findViewById(R.id.send);
         joinRoom = (FloatingActionButton) findViewById(R.id.join_room);
         messageBoxShadow = findViewById(R.id.message_box_shadow);
@@ -101,7 +106,6 @@ public class DetailRoomActivity extends BaseActivity {
         list = (RecyclerView) findViewById(R.id.list);
         mentionList = (RecyclerView) findViewById(R.id.mentions_list);
         errorView = (ErrorView) findViewById(R.id.error);
-        progressWheel = (ProgressWheel) findViewById(R.id.progress);
         errorViewMention = (ErrorView) findViewById(R.id.error_mention);
         progressWheelMention = (ProgressWheel) findViewById(R.id.progress_mention);
         message = (MultiAutoCompleteTextView) findViewById(R.id.message);
@@ -150,11 +154,13 @@ public class DetailRoomActivity extends BaseActivity {
             }
         });
         adapter = new MessagesAdapter(DetailRoomActivity.this);
-        HeaderViewRecyclerAdapter headerViewRecyclerAdapter = new HeaderViewRecyclerAdapter(adapter);
+        headerViewRecyclerAdapter = new HeaderViewRecyclerAdapter(adapter);
         View footer = getLayoutInflater().inflate(R.layout.footer_messages_list, null);
+        View header = getLayoutInflater().inflate(R.layout.header_messages_list, null);
         loadMore = (Button) footer.findViewById(R.id.load_more);
         progressMore = (ProgressWheel) footer.findViewById(R.id.progress_more);
         headerViewRecyclerAdapter.addFooterView(footer);
+        headerViewRecyclerAdapter.addHeaderView(header);
         GridLayoutManager manager = new GridLayoutManager(DetailRoomActivity.this, 1, LinearLayoutManager.VERTICAL, true);
         list.setLayoutManager(manager);
         list.setAdapter(headerViewRecyclerAdapter);
@@ -278,8 +284,6 @@ public class DetailRoomActivity extends BaseActivity {
         });
     }
 
-    private boolean loading = false;
-
     private void loadMessages(String beforeId, String afterId) {
         if (loading) return;
         loading = true;
@@ -290,6 +294,9 @@ public class DetailRoomActivity extends BaseActivity {
                 if (e != null) {
                     return;
                 }
+                loadMore.setVisibility(View.VISIBLE);
+                progressMore.setVisibility(View.GONE);
+                if (result == null || result.isEmpty()) return;
                 popolateRealm(result);
             }
         });
@@ -329,9 +336,6 @@ public class DetailRoomActivity extends BaseActivity {
     private void setUpMessages() {
         Realm realm = Realm.getDefaultInstance();
         List<MessageModel> messageModels = realm.where(MessageModel.class).equalTo("room_id", id).findAllSorted("sent", Sort.DESCENDING);
-        loadMore.setVisibility(View.VISIBLE);
-        progressMore.setVisibility(View.GONE);
-        progressWheel.setVisibility(View.GONE);
         if (messageModels.size() == 0) {
             errorView.setVisibility(View.VISIBLE);
             list.setVisibility(View.GONE);
@@ -431,6 +435,10 @@ public class DetailRoomActivity extends BaseActivity {
 
     private void setUpRoom(Room room) {
         isMember = room.isRoomMember();
+        if (isMember) {
+            headerViewRecyclerAdapter.getHeaderViews().clear();
+            headerViewRecyclerAdapter.notifyDataSetChanged();
+        }
         invalidateOptionsMenu();
         if (room.isRoomMember()) {
             messageBoxShadow.setVisibility(View.VISIBLE);
@@ -439,13 +447,13 @@ public class DetailRoomActivity extends BaseActivity {
         } else {
             messageBoxShadow.setVisibility(View.GONE);
             messageBox.setVisibility(View.GONE);
-            joinRoom.setTag(room.getUri());
+            joinRoom.setTag(room.getId());
             joinRoom.setVisibility(View.VISIBLE);
             joinRoom.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String uri = (String) v.getTag();
-                    HttpRequestClient.with(DetailRoomActivity.this).setGitterJoinRoom(uri, new FutureCallback<Room>() {
+                    String id = (String) v.getTag();
+                    HttpRequestClient.with(DetailRoomActivity.this).setGitterJoinRoom(id, new FutureCallback<Room>() {
                         @Override
                         public void onCompleted(Exception e, Room result) {
                             if (e != null) return;
@@ -461,6 +469,31 @@ public class DetailRoomActivity extends BaseActivity {
         } else {
             setSubtitle(room.getTopic());
         }
+        progressContainer.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.END)) {
+            drawerLayout.closeDrawer(GravityCompat.END);
+            return;
+        }
+        Navigator.with(DetailRoomActivity.this).utils().finishWithAnimation();
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.activity_detail_room;
+    }
+
+    @Override
+    protected int getToolbarId() {
+        return R.id.toolbar;
+    }
+
+    @Override
+    protected int getToolbarShadowId() {
+        return R.id.toolbar_shadow;
     }
 
     private class MentionTokenizer implements MultiAutoCompleteTextView.Tokenizer {
@@ -496,30 +529,6 @@ public class DetailRoomActivity extends BaseActivity {
         public CharSequence terminateToken(CharSequence text) {
             return text + " ";
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.END)) {
-            drawerLayout.closeDrawer(GravityCompat.END);
-            return;
-        }
-        Navigator.with(DetailRoomActivity.this).utils().finishWithAnimation();
-    }
-
-    @Override
-    protected int getLayoutResource() {
-        return R.layout.activity_detail_room;
-    }
-
-    @Override
-    protected int getToolbarId() {
-        return R.id.toolbar;
-    }
-
-    @Override
-    protected int getToolbarShadowId() {
-        return R.id.toolbar_shadow;
     }
 
     public class SpacesItemDecoration extends RecyclerView.ItemDecoration {

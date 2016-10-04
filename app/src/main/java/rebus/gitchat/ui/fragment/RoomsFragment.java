@@ -98,6 +98,16 @@ public class RoomsFragment extends BaseFragment implements FutureCallback<List<R
         return true;
     }
 
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.fragment_rooms;
+    }
+
+    @Override
+    public boolean onSupportBackPressed(Bundle bundle) {
+        return false;
+    }
+
     public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
         private int space;
 
@@ -116,15 +126,5 @@ public class RoomsFragment extends BaseFragment implements FutureCallback<List<R
                 outRect.bottom = space + space;
             }
         }
-    }
-
-    @Override
-    protected int getLayoutResource() {
-        return R.layout.fragment_rooms;
-    }
-
-    @Override
-    public boolean onSupportBackPressed(Bundle bundle) {
-        return false;
     }
 }

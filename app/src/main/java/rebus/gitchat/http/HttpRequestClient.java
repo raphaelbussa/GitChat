@@ -1,7 +1,6 @@
 package rebus.gitchat.http;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -25,6 +24,7 @@ import rebus.gitchat.http.response.gitter.user.User;
 /**
  * Created by Raphael on 17/12/2015.
  */
+@SuppressWarnings("SpellCheckingInspection")
 public class HttpRequestClient {
 
     private Context context;
@@ -229,10 +229,11 @@ public class HttpRequestClient {
                 .setCallback(futureCallback);
     }
 
-    public void setGitterJoinRoom(String uri, FutureCallback<Room> futureCallback) {
+    public void setGitterJoinRoom(String id, FutureCallback<Room> futureCallback) {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("uri", uri);
-        String url = Constants.API_GITTER_BASE_URL + "/rooms/";
+        jsonObject.addProperty("id", id);
+        String userId = UserAdapter.with(context, UserFactory.TYPE.GITTER).getUserId();
+        String url = Constants.API_GITTER_BASE_URL + "/user/" + userId + "/rooms";
         Ion.with(context)
                 .load("POST", url)
                 .setHeader("Authorization", UserAdapter.with(context, UserFactory.TYPE.GITTER).getUserToken())

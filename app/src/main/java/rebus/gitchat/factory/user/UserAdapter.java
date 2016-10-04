@@ -10,6 +10,13 @@ import rebus.gitchat.R;
  */
 public class UserAdapter {
 
+    private final static String GITTER = R.class.getPackage().getName() + ".prefs.user.gitter";
+    private final static String GITHUB = R.class.getPackage().getName() + ".prefs.user.github";
+    private final static String KEY_USER_TOKEN = R.class.getPackage().getName() + ".user_token";
+    private final static String KEY_USER_NAME = R.class.getPackage().getName() + ".user_name";
+    private final static String KEY_USER_AVATAR = R.class.getPackage().getName() + ".user_avatar";
+    private final static String KEY_USER_FULL_NAME = R.class.getPackage().getName() + ".user_full_name";
+    private final static String KEY_USER_ID = R.class.getPackage().getName() + ".user_id";
     private static UserAdapter instance;
     private SharedPreferences sharedPreferences;
 
@@ -87,14 +94,5 @@ public class UserAdapter {
         editor.clear();
         editor.apply();
     }
-
-    private final static String GITTER = R.class.getPackage().getName() + ".prefs.user.gitter";
-    private final static String GITHUB = R.class.getPackage().getName() + ".prefs.user.github";
-
-    private final static String KEY_USER_TOKEN = R.class.getPackage().getName() + ".user_token";
-    private final static String KEY_USER_NAME = R.class.getPackage().getName() + ".user_name";
-    private final static String KEY_USER_AVATAR = R.class.getPackage().getName() + ".user_avatar";
-    private final static String KEY_USER_FULL_NAME = R.class.getPackage().getName() + ".user_full_name";
-    private final static String KEY_USER_ID = R.class.getPackage().getName() + ".user_id";
 
 }

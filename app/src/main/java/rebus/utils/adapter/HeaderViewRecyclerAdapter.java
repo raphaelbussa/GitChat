@@ -22,11 +22,43 @@ public class HeaderViewRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
     private RecyclerView.Adapter mWrappedAdapter;
     private List<View> mHeaderViews, mFooterViews;
     private Map<Class, Integer> mItemTypesOffset;
+    private RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            super.onChanged();
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onItemRangeChanged(int positionStart, int itemCount) {
+            super.onItemRangeChanged(positionStart, itemCount);
+            notifyItemRangeChanged(positionStart + getHeaderCount(), itemCount);
+        }
+
+        @Override
+        public void onItemRangeInserted(int positionStart, int itemCount) {
+            super.onItemRangeInserted(positionStart, itemCount);
+            notifyItemRangeInserted(positionStart + getHeaderCount(), itemCount);
+        }
+
+        @Override
+        public void onItemRangeRemoved(int positionStart, int itemCount) {
+            super.onItemRangeRemoved(positionStart, itemCount);
+            notifyItemRangeRemoved(positionStart + getHeaderCount(), itemCount);
+        }
+
+        @Override
+        public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+            super.onItemRangeMoved(fromPosition, toPosition, itemCount);
+            int hCount = getHeaderCount();
+            notifyItemRangeChanged(fromPosition + hCount, toPosition + hCount + itemCount);
+        }
+    };
 
     public HeaderViewRecyclerAdapter(RecyclerView.Adapter adapter) {
-        mHeaderViews = new ArrayList<View>();
-        mFooterViews = new ArrayList<View>();
-        mItemTypesOffset = new HashMap<Class, Integer>();
+        mHeaderViews = new ArrayList<>();
+        mFooterViews = new ArrayList<>();
+        mItemTypesOffset = new HashMap<>();
         setWrappedAdapter(adapter);
     }
 
@@ -61,6 +93,7 @@ public class HeaderViewRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         int hCount = getHeaderCount();
@@ -110,38 +143,13 @@ public class HeaderViewRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         return mItemTypesOffset.get(mWrappedAdapter.getClass());
     }
 
-    private RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
-        @Override
-        public void onChanged() {
-            super.onChanged();
-            notifyDataSetChanged();
-        }
+    public List<View> getHeaderViews() {
+        return mHeaderViews;
+    }
 
-        @Override
-        public void onItemRangeChanged(int positionStart, int itemCount) {
-            super.onItemRangeChanged(positionStart, itemCount);
-            notifyItemRangeChanged(positionStart + getHeaderCount(), itemCount);
-        }
-
-        @Override
-        public void onItemRangeInserted(int positionStart, int itemCount) {
-            super.onItemRangeInserted(positionStart, itemCount);
-            notifyItemRangeInserted(positionStart + getHeaderCount(), itemCount);
-        }
-
-        @Override
-        public void onItemRangeRemoved(int positionStart, int itemCount) {
-            super.onItemRangeRemoved(positionStart, itemCount);
-            notifyItemRangeRemoved(positionStart + getHeaderCount(), itemCount);
-        }
-
-        @Override
-        public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
-            super.onItemRangeMoved(fromPosition, toPosition, itemCount);
-            int hCount = getHeaderCount();
-            notifyItemRangeChanged(fromPosition + hCount, toPosition + hCount + itemCount);
-        }
-    };
+    public List<View> getFooterViews() {
+        return mFooterViews;
+    }
 
     private static class StaticViewHolder extends RecyclerView.ViewHolder {
 
@@ -149,4 +157,5 @@ public class HeaderViewRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
             super(itemView);
         }
     }
+
 }

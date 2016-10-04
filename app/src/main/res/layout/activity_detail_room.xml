@@ -28,28 +28,21 @@
             android:background="@color/background" />
 
         <View
-            android:id="@+id/toolbar_shadow"
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_below="@+id/toolbar"
-            android:background="@drawable/toolbar_shadow" />
-
-        <View
             android:id="@+id/message_box_shadow"
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:layout_above="@+id/new_message_box"
-            android:background="@drawable/message_shadow" />
+            android:background="@drawable/message_shadow"
+            android:visibility="gone" />
 
         <LinearLayout
-            android:visibility="gone"
             android:id="@+id/new_message_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal"
-            android:padding="2dp">
+            android:padding="2dp"
+            android:visibility="gone">
 
             <MultiAutoCompleteTextView
                 android:id="@+id/message"
@@ -76,16 +69,6 @@
             android:layout_above="@+id/new_message_box"
             android:layout_below="@+id/toolbar">
 
-
-            <com.pnikosis.materialishprogress.ProgressWheel
-                android:id="@+id/progress"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                wheel:matProg_barColor="@color/accent"
-                wheel:matProg_progressIndeterminate="true" />
-
             <tr.xip.errorview.ErrorView
                 android:id="@+id/error"
                 android:layout_width="match_parent"
@@ -96,16 +79,42 @@
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_below="@id/toolbar"
+            android:background="@color/background"
+            android:clickable="true"
+            android:id="@+id/progress_container"
+            android:layout_height="match_parent">
+
+            <com.pnikosis.materialishprogress.ProgressWheel
+                android:id="@+id/progress"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                wheel:matProg_barColor="@color/accent"
+                wheel:matProg_progressIndeterminate="true" />
+
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/toolbar_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_below="@+id/toolbar"
+            android:background="@drawable/toolbar_shadow" />
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/join_room"
             android:layout_width="wrap_content"
-            android:src="@drawable/ic_fab_message"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_margin="@dimen/dimen_16_dp" />
+            android:layout_margin="@dimen/dimen_16_dp"
+            android:src="@drawable/ic_fab_message"
+            android:visibility="gone" />
 
     </RelativeLayout>
 

@@ -22,7 +22,7 @@ import rebus.gitchat.R;
 public class Utils {
 
     public static MaterialDialog loadingDialog(Context context) {
-        return  new MaterialDialog.Builder(context)
+        return new MaterialDialog.Builder(context)
                 .content(R.string.loading)
                 .progress(true, 0)
                 .cancelable(false)

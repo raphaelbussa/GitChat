@@ -28,5 +28,13 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="detail_room">Detail room</string>
+    <string name="about">About</string>
+
+    <string name="profile_fullname">{oct-person} %1$s</string>
+    <string name="profile_company">{oct-organization} %1$s</string>
+    <string name="profile_location">{oct-location} %1$s</string>
+    <string name="profile_email">{oct-mail} %1$s</string>
+    <string name="profile_link">{oct-link} %1$s</string>
+    <string name="repository">Repository</string>
 
 </resources>

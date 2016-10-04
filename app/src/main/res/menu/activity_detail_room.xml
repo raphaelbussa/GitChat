@@ -27,7 +27,7 @@
 
     <item
         android:id="@+id/leave_room"
-        app:showAsAction="never"
-        android:title="@string/leave_room" />
+        android:title="@string/leave_room"
+        app:showAsAction="never" />
 
 </menu>

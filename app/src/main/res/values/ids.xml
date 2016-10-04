@@ -24,7 +24,7 @@
 
 <resources>
 
-    <item type="id" name="USER_NAME" />
-    <item type="id" name="user_mentions" />
+    <item name="USER_NAME" type="id" />
+    <item name="user_mentions" type="id" />
 
 </resources>
