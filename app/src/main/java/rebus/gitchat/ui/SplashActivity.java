@@ -3,11 +3,9 @@ package rebus.gitchat.ui;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
-
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
-import com.nineoldandroids.animation.Animator;
 
 import org.fingerlinks.mobile.android.navigator.Navigator;
 
@@ -60,30 +58,9 @@ public class SplashActivity extends BaseActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                YoYo.with(Techniques.SlideInUp)
-                        .duration(1200)
-                        .withListener(new Animator.AnimatorListener() {
-                            @Override
-                            public void onAnimationStart(Animator animation) {
-                                login.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-
-                            }
-
-                            @Override
-                            public void onAnimationCancel(Animator animation) {
-
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animator animation) {
-
-                            }
-                        })
-                        .playOn(login);
+                Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.bottom_up);
+                login.startAnimation(animation);
+                login.setVisibility(View.VISIBLE);
             }
         }, 400);
     }

@@ -21,7 +21,8 @@ public class GitChatApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        RealmConfiguration config = new RealmConfiguration.Builder(getApplicationContext())
+        Realm.init(getApplicationContext());
+        RealmConfiguration config = new RealmConfiguration.Builder()
                 .name(getResources().getString(R.string.database_conf_name))
                 .schemaVersion(getResources().getInteger(R.integer.database_conf_version))
                 .modules(new DbModule())
